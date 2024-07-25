@@ -21,6 +21,7 @@ function App(): React.JSX.Element {
   const scrollHandler = useAnimatedScrollHandler(event => {
     console.log(event.contentOffset.x);
     translateX.value = event.contentOffset.x;
+    console.log(translateX.value);
   });
 
   return (

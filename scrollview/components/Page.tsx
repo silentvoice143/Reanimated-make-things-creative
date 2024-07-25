@@ -25,6 +25,8 @@ const Page: React.FC<pageProps> = ({title, index, translateX}) => {
       [0, 1, 0],
       Extrapolation.CLAMP,
     );
+    console.log(scale, '===scale===', index);
+
     return {
       transform: [{scale: scale}],
       borderRadius: scale * (SIZE / 2),

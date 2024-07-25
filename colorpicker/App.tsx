@@ -5,9 +5,10 @@
  * @format
  */
 
-import React from 'react';
+import React, {useCallback} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Dimensions,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -16,102 +17,75 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import Colorpicker from './components/Colorpicker';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const COLORS = [
+  'red',
+  'purple',
+  'blue',
+  'cyan',
+  'green',
+  'yellow',
+  'orange',
+  'black',
+  'white',
+];
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const BACKGROUND_COLOR = 'rgba(0,0,0,0.9)';
+const {width} = Dimensions.get('screen');
+const CIRCLE_SIZE = width * 0.8;
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const pickedColor = useSharedValue(COLORS[0]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const ranimatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: pickedColor.value,
+    };
+  }, []);
+
+  const onColorChange = useCallback(color => {
+    'worklet';
+    pickedColor.value = color;
+  }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <>
+      <GestureHandlerRootView>
+        <View style={styles.topContainer}>
+          <Animated.View style={[styles.colorBall, ranimatedStyle]} />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <View style={styles.bottomContainer}>
+          <Colorpicker colors={COLORS} onColorChange={onColorChange} />
+        </View>
+      </GestureHandlerRootView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  topContainer: {
+    flex: 3,
+    backgroundColor: BACKGROUND_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  bottomContainer: {
+    flex: 1,
+    backgroundColor: BACKGROUND_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  colorBall: {
+    height: CIRCLE_SIZE,
+    width: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
+    backgroundColor: 'red',
   },
 });
 
